@@ -1,0 +1,5 @@
+Flask
+psutil
+wmi
+speedtest-cli
+pywin32
