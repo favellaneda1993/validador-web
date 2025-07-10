@@ -1,30 +1,32 @@
 import pandas as pd
-from datetime import datetime
-from detector_equipo import evaluar_equipo
-from detector_internet import evaluar_internet
+from io import BytesIO
 
-def generar_excel():
-    equipo = evaluar_equipo()
-    internet = evaluar_internet()
-    nombre_archivo = "resultado_validacion.xlsx"
-
-    datos = {
-        "Sistema Operativo": [equipo["sistema_operativo"]],
-        "Arquitectura": [equipo["arquitectura"]],
-        "Procesador": [equipo["procesador"]],
-        "Núcleos físicos": [equipo["nucleos_fisicos"]],
-        "Núcleos lógicos": [equipo["nucleos_logicos"]],
-        "RAM (GB)": [equipo["ram"]],
-        "Disco (GB)": [equipo["disco"]],
-        "Estado del equipo": [equipo["estado"]],
-        "Descarga (Mbps)": [internet["descarga"]],
-        "Carga (Mbps)": [internet["carga"]],
-        "Latencia (ms)": [internet["latencia"]],
-        "Estado de internet": [internet["estado_internet"]],
-        "Fecha": [datetime.now().strftime("%Y-%m-%d %H:%M:%S")]
+def generar_excel(equipo, internet):
+    data = {
+        "Evaluación": ["Sistema Operativo", "Arquitectura", "Procesador", "Núcleos físicos", "Núcleos lógicos", "RAM", "Disco", "Estado del equipo",
+                       "Velocidad de descarga", "Velocidad de carga", "Latencia", "Estado del internet"],
+        "Resultado": [
+            equipo.get("sistema_operativo", ""),
+            equipo.get("arquitectura", ""),
+            equipo.get("procesador", ""),
+            equipo.get("nucleos_fisicos", ""),
+            equipo.get("nucleos_logicos", ""),
+            equipo.get("ram", ""),
+            equipo.get("disco", ""),
+            equipo.get("estado", ""),
+            internet.get("velocidad_descarga", ""),
+            internet.get("velocidad_carga", ""),
+            internet.get("latencia", ""),
+            internet.get("estado", "")
+        ]
     }
 
-    df = pd.DataFrame(datos)
-    df.to_excel(nombre_archivo, index=False)
-    return nombre_archivo
+    df = pd.DataFrame(data)
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name="Evaluación")
+
+    output.seek(0)
+    return output
 
