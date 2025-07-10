@@ -1,5 +1,3 @@
 Flask
-psutil
-wmi
-speedtest-cli
-pywin32
+pandas
+openpyxl
