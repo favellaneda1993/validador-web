@@ -1,33 +1,43 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, render_template, request, jsonify
 from exportar_excel import generar_excel
 
 app = Flask(__name__)
-
-resultado = {}
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/evaluar', methods=['POST'])
-def evaluar():
-    global resultado
-    datos = request.json
-    resultado = datos
+@app.route('/resultado', methods=['POST'])
+def resultado():
+    datos = request.get_json()
+    equipo = datos.get('equipo', {})
+    internet = datos.get('internet', {})
 
-    # Evaluación simple
-    resultado["estado_equipo"] = "APROBADO" if float(datos.get("ram", 0)) >= 4 else "RECHAZADO"
-    resultado["estado_internet"] = "APROBADO" if float(datos.get("velocidad_descarga", 0)) >= 5 else "RECHAZADO"
-    return jsonify({"estado": "OK"})
+    # Evaluación simple de criterios
+    estado_equipo = "APROBADO" if (
+        equipo.get('ram', 0) >= 8 and
+        equipo.get('disco', 0) >= 100 and
+        equipo.get('nucleos_fisicos', 0) >= 4
+    ) else "RECHAZADO"
 
-@app.route('/resultado')
-def resultado_final():
-    return render_template('resultado.html', **resultado)
+    estado_internet = "APROBADO" if (
+        internet.get('velocidad_descarga', 0) >= 10 and
+        internet.get('latencia', 999) <= 100
+    ) else "RECHAZADO"
 
-@app.route('/descargar_excel')
+    return jsonify({
+        "equipo": equipo,
+        "internet": internet,
+        "estado_equipo": estado_equipo,
+        "estado_internet": estado_internet
+    })
+
+@app.route('/descargar_excel', methods=['POST'])
 def descargar_excel():
-    archivo = generar_excel(resultado)
-    return send_file(archivo, as_attachment=True)
+    datos = request.get_json()
+    archivo = generar_excel(datos)
+    return archivo
 
 if __name__ == '__main__':
     app.run(debug=True)
+
