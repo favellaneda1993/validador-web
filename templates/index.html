@@ -1,12 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Validador</title>
-    <script src="{{ url_for('static', filename='evaluar.js') }}"></script>
+  <meta charset="UTF-8">
+  <title>Validador Web</title>
+  <script>
+    async function obtenerDatosYEnviar() {
+      const memoriaGB = navigator.deviceMemory || 0;
+      const plataforma = navigator.platform || "Desconocido";
+      const arquitectura = navigator.userAgent.includes("64") ? "64bit" : "32bit";
+
+      // Test de velocidad simple (descarga)
+      const inicio = performance.now();
+      await fetch("https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg");
+      const fin = performance.now();
+      const velocidadDescarga = ((5 * 8) / ((fin - inicio) / 1000)).toFixed(2); // en Mbps (5 MB imagen)
+
+      const datos = {
+        sistema_operativo: plataforma,
+        arquitectura: arquitectura,
+        ram: memoriaGB,
+        velocidad_descarga: velocidadDescarga
+      };
+
+      await fetch("/evaluar", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      }).then(res => window.location.href = "/resultado");
+    }
+
+    window.onload = obtenerDatosYEnviar;
+  </script>
 </head>
 <body>
-    <h1>Evaluación del Equipo</h1>
-    <div id="resultado">Cargando evaluación...</div>
+  <h2>🕵️‍♂️ Evaluando automáticamente tu equipo...</h2>
 </body>
 </html>
