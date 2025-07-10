@@ -2,6 +2,7 @@ from flask import Flask, render_template, send_file
 from exportar_excel import generar_excel
 from detector_equipo import evaluar_equipo
 from detector_internet import evaluar_internet
+from flask import request, jsonify
 import os
 
 app = Flask(__name__)
@@ -24,3 +25,22 @@ def descargar_excel():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
+
+
+@app.route('/evaluar_equipo', methods=['POST'])
+def evaluar_equipo_js():
+    data = request.get_json()
+
+    estado = "APROBADO"
+    if data['ram'] < 4 or data['nucleos'] < 2:
+        estado = "RECHAZADO"
+
+    resultado = {
+        "Sistema Operativo": data['sistema'],
+        "Arquitectura": data['arquitectura'],
+        "Procesador": data['procesador'],
+        "RAM (GB)": data['ram'],
+        "Núcleos": data['nucleos'],
+        "Estado": estado
+    }
+    return jsonify(resultado)
