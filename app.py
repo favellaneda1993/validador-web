@@ -1,46 +1,33 @@
-from flask import Flask, render_template, send_file
+from flask import Flask, request, render_template, jsonify
 from exportar_excel import generar_excel
-from detector_equipo import evaluar_equipo
-from detector_internet import evaluar_internet
-from flask import request, jsonify
-import os
 
 app = Flask(__name__)
+
+resultado = {}
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/evaluar', methods=['POST'])
+def evaluar():
+    global resultado
+    datos = request.json
+    resultado = datos
+
+    # Evaluación simple
+    resultado["estado_equipo"] = "APROBADO" if float(datos.get("ram", 0)) >= 4 else "RECHAZADO"
+    resultado["estado_internet"] = "APROBADO" if float(datos.get("velocidad_descarga", 0)) >= 5 else "RECHAZADO"
+    return jsonify({"estado": "OK"})
+
 @app.route('/resultado')
-def resultado():
-    equipo = evaluar_equipo()
-    internet = evaluar_internet()
-    return render_template('resultado.html', equipo=equipo, internet=internet)
+def resultado_final():
+    return render_template('resultado.html', **resultado)
 
 @app.route('/descargar_excel')
 def descargar_excel():
-    archivo = generar_excel()
+    archivo = generar_excel(resultado)
     return send_file(archivo, as_attachment=True)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)
-
-
-@app.route('/evaluar_equipo', methods=['POST'])
-def evaluar_equipo_js():
-    data = request.get_json()
-
-    estado = "APROBADO"
-    if data['ram'] < 4 or data['nucleos'] < 2:
-        estado = "RECHAZADO"
-
-    resultado = {
-        "Sistema Operativo": data['sistema'],
-        "Arquitectura": data['arquitectura'],
-        "Procesador": data['procesador'],
-        "RAM (GB)": data['ram'],
-        "Núcleos": data['nucleos'],
-        "Estado": estado
-    }
-    return jsonify(resultado)
+    app.run(debug=True)
