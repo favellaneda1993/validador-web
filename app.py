@@ -1,4 +1,4 @@
-ffrom flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file
 from exportar_excel import generar_excel
 from detector_equipo import evaluar_equipo
 from detector_internet import evaluar_internet
