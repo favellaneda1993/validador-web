@@ -1,3 +1,5 @@
 Flask
+psutil
 pandas
 openpyxl
+speedtest-cli
