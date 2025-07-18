@@ -1,42 +1,28 @@
-# 🖥️ Validador de Equipos e Internet (Flask)
+# Validador Web
 
-Este proyecto es una aplicación web construida con **Python Flask** que permite:
+Este proyecto muestra las características del sistema y velocidad de internet del dispositivo en tiempo real desde cualquier navegador. No guarda datos.
 
-✅ Detectar automáticamente las características del equipo:
-- Sistema operativo
-- Arquitectura (32 o 64 bits)
-- Procesador
-- Núcleos físicos y lógicos
-- Memoria RAM
-- Almacenamiento total
+## Cómo ejecutar localmente
 
-✅ Evaluar la conexión a internet:
-- Velocidad de descarga (Mbps)
-- Velocidad de carga (estimada)
-- Latencia (ms)
+1. Instala Flask:
 
-✅ Determinar si el equipo cumple con los requisitos mínimos:
-- Procesador i3 6ta gen o superior (o Ryzen)
-- RAM ≥ 4 GB
-- Disco ≥ 256 GB
-- Descarga ≥ 25 Mbps
-- Carga ≥ 10 Mbps
-- Latencia ≤ 30 ms
+pip install flask
 
-✅ Exportar los resultados a un archivo Excel
+2. Ejecuta la app:
+python app.py
+less
+Copiar
+Editar
 
----
+Luego abre en tu navegador: http://localhost:5000
 
-## 🌐 Despliegue en Render
+## Despliegue en Render
 
-La aplicación está adaptada para funcionar correctamente en servidores Linux como **Render.com**.
-
-### Requisitos
-
-- Python 3.x
-- Flask
-- pandas
-- openpyxl
-
-### Estructura
-
+1. Sube este repositorio a GitHub.
+2. Ve a [https://render.com](https://render.com)
+3. Crea un nuevo "Web Service" desde tu repositorio.
+4. Selecciona:
+   - Runtime: Python 3.x
+   - Build command: `pip install -r requirements.txt`
+   - Start command: `python app.py`
+5. Render te dará un enlace público.
