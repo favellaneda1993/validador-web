@@ -266,8 +266,8 @@
             <div class="input-group">
                 <label for="user-name">Nombre del Postulante:</label>
                 <input type="text" id="user-name" placeholder="Ej: Juan Pérez" maxlength="50">
-            </div>
-            
+  </div>
+
             <button class="btn-start" onclick="iniciarEvaluacion()">
                 🚀 Comenzar Evaluación
             </button>
@@ -306,7 +306,19 @@
                             <div class="info-row">
                                 <span class="info-label">Procesador:</span>
                                 <span class="info-value" id="procesador">-</span>
-  </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Marca:</span>
+                                <span class="info-value" id="cpu-marca">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Familia:</span>
+                                <span class="info-value" id="cpu-familia">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Generación:</span>
+                                <span class="info-value" id="cpu-generacion">-</span>
+                            </div>
 
                             <div class="info-row">
                                 <span class="info-label">RAM:</span>
@@ -419,6 +431,9 @@
                 document.getElementById('arquitectura').textContent = caracteristicasEquipo.arquitectura;
                 document.getElementById('procesador').textContent = caracteristicasEquipo.procesador;
                 document.getElementById('ram').textContent = caracteristicasEquipo.ram;
+                if (caracteristicasEquipo.cpu_marca) document.getElementById('cpu-marca').textContent = caracteristicasEquipo.cpu_marca;
+                if (caracteristicasEquipo.cpu_familia) document.getElementById('cpu-familia').textContent = caracteristicasEquipo.cpu_familia;
+                if (caracteristicasEquipo.cpu_generacion) document.getElementById('cpu-generacion').textContent = caracteristicasEquipo.cpu_generacion;
                 document.getElementById('disco').textContent = caracteristicasEquipo.disco;
                 
                 const estadoEquipo = document.getElementById('estado-equipo');
@@ -507,12 +522,15 @@
                         else if (digits.length === 4) generacion = String(parseInt(digits.substring(0, 1), 10));
                     }
 
+                    let cpuMarca = 'Intel Core';
+                    let cpuFamilia = family ? `i${family}` : '';
+                    let cpuGeneracion = generacion ? `${generacion}ª generación` : '';
+
                     if (family) {
-                        const marca = 'Intel Core';
                         if (generacion) {
-                            procesador = `${marca} i${family} - ${generacion}ª generación`;
+                            procesador = `${cpuMarca} ${cpuFamilia} - ${cpuGeneracion}`;
                         } else {
-                            procesador = `${marca} i${family}`;
+                            procesador = `${cpuMarca} ${cpuFamilia}`;
                         }
                     } else {
                         // Fallback por número de núcleos
@@ -521,6 +539,8 @@
                         else if (cores >= 8) procesador = 'Intel Core i5';
                         else if (cores >= 4) procesador = 'Intel Core i3';
                         else procesador = 'Intel Core';
+                        cpuFamilia = procesador.includes('i7') ? 'i7' : (procesador.includes('i5') ? 'i5' : (procesador.includes('i3') ? 'i3' : ''));
+                        cpuGeneracion = procesador.includes('12') ? '12ª generación' : cpuGeneracion;
                     }
                 } else if (userAgent.toLowerCase().includes('amd')) {
                     if (userAgent.includes('Ryzen')) {
@@ -556,6 +576,21 @@
                 // Asegurar que siempre hay un procesador válido
                 if (!procesador || procesador === '') {
                     procesador = `Intel Core`;
+                }
+
+                // Preparar campos desglosados
+                let cpuMarcaFinal = 'Intel Core';
+                let cpuFamiliaFinal = '';
+                let cpuGeneracionFinal = '';
+                if (procesador.toLowerCase().includes('intel core')) {
+                    const fam = procesador.match(/i(3|5|7|9)/i);
+                    cpuFamiliaFinal = fam ? `i${fam[1]}` : '';
+                    const gen = procesador.match(/(\d{1,2})ª generación/);
+                    cpuGeneracionFinal = gen ? `${gen[1]}ª generación` : '';
+                } else if (procesador.toLowerCase().includes('amd')) {
+                    cpuMarcaFinal = 'AMD';
+                    const fam = procesador.match(/Ryzen\s*(\d)/i);
+                    cpuFamiliaFinal = fam ? `Ryzen ${fam[1]}` : 'Ryzen';
                 }
 
                 // RAM - preferir dato real del navegador (Chrome expone navigator.deviceMemory)
@@ -631,6 +666,9 @@
                     sistema_operativo: sistemaOperativo,
                     arquitectura: arquitectura,
                     procesador: procesador,
+                    cpu_marca: cpuMarcaFinal,
+                    cpu_familia: cpuFamiliaFinal,
+                    cpu_generacion: cpuGeneracionFinal,
                     ram: ram,
                     disco: disco,
                     estado_equipo: estadoEquipo
