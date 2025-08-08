@@ -593,6 +593,19 @@
                     cpuFamiliaFinal = fam ? `Ryzen ${fam[1]}` : 'Ryzen';
                 }
 
+                // Si no se pudo extraer familia desde el userAgent, inferir por núcleos (heurística)
+                if (!cpuFamiliaFinal) {
+                    if (cores >= 16) cpuFamiliaFinal = 'i7';
+                    else if (cores >= 12) cpuFamiliaFinal = 'i7';
+                    else if (cores >= 8) cpuFamiliaFinal = 'i5';
+                    else if (cores >= 4) cpuFamiliaFinal = 'i3';
+                }
+
+                // Si no hay generación detectable, dejar vacío ("-") para no inventar datos
+                if (!cpuGeneracionFinal) {
+                    cpuGeneracionFinal = '';
+                }
+
                 // RAM - preferir dato real del navegador (Chrome expone navigator.deviceMemory)
                 const browserDeviceMemory = (extensionInfo && extensionInfo.deviceMemory) || navigator.deviceMemory;
                 let ram = '';
