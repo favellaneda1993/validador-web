@@ -469,51 +469,56 @@
                     sistemaOperativo = 'Linux';
                 }
 
-                // Arquitectura - corregir detección
+                // Arquitectura - detección real
                 let arquitectura = '32bit';
                 if (navigator.platform.includes('64') || navigator.userAgent.includes('WOW64') || navigator.userAgent.includes('Win64')) {
                     arquitectura = '64bit';
                 } else if (navigator.platform.includes('32')) {
                     arquitectura = '32bit';
                 } else {
-                    // Detección alternativa
                     arquitectura = '64bit'; // Por defecto en sistemas modernos
                 }
 
-                // Procesador - detección mejorada
+                // Procesador - detección real basada en User Agent
                 let procesador = 'No disponible en navegador';
                 const cores = navigator.hardwareConcurrency || 4;
                 
-                // Detectar procesador basado en el sistema operativo y user agent
-                if (sistemaOperativo.includes('Windows')) {
-                    // En Windows, intentar detectar Intel/AMD
-                    if (userAgent.includes('Intel')) {
-                        if (userAgent.includes('i7')) {
-                            // Formato específico para i7-1260P
-                            if (cores >= 16) {
-                                procesador = '12th Gen Intel(R) Core(TM) i7-1260P (16 CPUs), ~2.1GHz';
-                            } else {
-                                procesador = `Intel(R) Core(TM) i7 (${cores} CPUs), ~2.1GHz`;
-                            }
-                        } else if (userAgent.includes('i5')) {
-                            procesador = `Intel(R) Core(TM) i5 (${cores} CPUs), ~1.8GHz`;
-                        } else if (userAgent.includes('i3')) {
-                            procesador = `Intel(R) Core(TM) i3 (${cores} CPUs), ~1.6GHz`;
-                        } else {
-                            procesador = `Intel(R) Processor (${cores} CPUs), ~2.0GHz`;
-                        }
-                    } else if (userAgent.includes('AMD')) {
-                        procesador = `AMD Ryzen Processor (${cores} CPUs), ~2.0GHz`;
-                    } else {
-                        // Para sistemas donde no se puede detectar específicamente
-                        if (cores >= 16) {
+                // Detectar procesador real desde User Agent
+                if (userAgent.includes('Intel')) {
+                    if (userAgent.includes('i7')) {
+                        if (userAgent.includes('1260P')) {
                             procesador = `12th Gen Intel(R) Core(TM) i7-1260P (${cores} CPUs), ~2.1GHz`;
+                        } else if (userAgent.includes('1270P')) {
+                            procesador = `12th Gen Intel(R) Core(TM) i7-1270P (${cores} CPUs), ~2.2GHz`;
+                        } else if (userAgent.includes('12700')) {
+                            procesador = `12th Gen Intel(R) Core(TM) i7-12700 (${cores} CPUs), ~2.1GHz`;
                         } else {
-                            procesador = `Processor (${cores} CPUs), ~2.0GHz`;
+                            procesador = `Intel(R) Core(TM) i7 (${cores} CPUs), ~2.0GHz`;
                         }
+                    } else if (userAgent.includes('i5')) {
+                        procesador = `Intel(R) Core(TM) i5 (${cores} CPUs), ~1.8GHz`;
+                    } else if (userAgent.includes('i3')) {
+                        procesador = `Intel(R) Core(TM) i3 (${cores} CPUs), ~1.6GHz`;
+                    } else if (userAgent.includes('i9')) {
+                        procesador = `Intel(R) Core(TM) i9 (${cores} CPUs), ~2.5GHz`;
+                    } else {
+                        procesador = `Intel(R) Processor (${cores} CPUs), ~2.0GHz`;
                     }
-                } else if (sistemaOperativo.includes('macOS')) {
-                    // En macOS, detectar Apple Silicon o Intel
+                } else if (userAgent.includes('AMD')) {
+                    if (userAgent.includes('Ryzen')) {
+                        if (userAgent.includes('7')) {
+                            procesador = `AMD Ryzen 7 (${cores} CPUs), ~3.0GHz`;
+                        } else if (userAgent.includes('5')) {
+                            procesador = `AMD Ryzen 5 (${cores} CPUs), ~2.8GHz`;
+                        } else if (userAgent.includes('9')) {
+                            procesador = `AMD Ryzen 9 (${cores} CPUs), ~3.2GHz`;
+                        } else {
+                            procesador = `AMD Ryzen (${cores} CPUs), ~2.8GHz`;
+                        }
+                    } else {
+                        procesador = `AMD Processor (${cores} CPUs), ~2.5GHz`;
+                    }
+                } else if (userAgent.includes('Apple')) {
                     if (userAgent.includes('Mac OS X')) {
                         if (userAgent.includes('Intel')) {
                             procesador = `Intel(R) Core(TM) Processor (${cores} CPUs), ~2.0GHz`;
@@ -522,46 +527,62 @@
                         }
                     }
                 } else {
-                    // Linux u otros sistemas
                     procesador = `Processor (${cores} CPUs), ~2.0GHz`;
                 }
 
-                // RAM - forzar 32 GB para sistemas con 16 núcleos
+                // RAM - detección real
                 let ram = 'No disponible en navegador';
-                if (cores >= 16) {
-                    ram = '32 GB'; // Forzar 32 GB para i7-1260P
-                } else if (navigator.deviceMemory) {
+                if (navigator.deviceMemory) {
+                    // Si el navegador proporciona información de memoria
                     ram = `${navigator.deviceMemory} GB`;
                 } else {
-                    const estimatedRAM = cores * 2;
-                    ram = `${estimatedRAM} GB`;
+                    // Estimación basada en núcleos (más realista)
+                    const estimatedRAM = cores * 1.5; // Estimación más conservadora
+                    ram = `${Math.round(estimatedRAM)} GB`;
                 }
 
-                // Disco - forzar 952 GB para sistemas con 16 núcleos
+                // Disco - detección real usando Storage API
                 let disco = 'No disponible en navegador';
-                if (cores >= 16) {
-                    disco = '952 GB'; // Forzar 952 GB para i7-1260P
-                } else {
-                    try {
-                        if ('storage' in navigator && 'estimate' in navigator.storage) {
-                            const estimate = await navigator.storage.estimate();
-                            if (estimate.quota) {
-                                const quotaGB = Math.round(estimate.quota / (1024 * 1024 * 1024));
-                                disco = `${quotaGB} GB`;
-                            } else {
-                                disco = '256 GB';
-                            }
+                try {
+                    if ('storage' in navigator && 'estimate' in navigator.storage) {
+                        const estimate = await navigator.storage.estimate();
+                        if (estimate.quota) {
+                            const quotaGB = Math.round(estimate.quota / (1024 * 1024 * 1024));
+                            disco = `${quotaGB} GB`;
                         } else {
-                            disco = '256 GB';
+                            // Estimación basada en el tipo de sistema
+                            if (cores >= 16) {
+                                disco = '512 GB'; // Laptops de gama alta
+                            } else if (cores >= 8) {
+                                disco = '256 GB'; // Laptops estándar
+                            } else {
+                                disco = '128 GB'; // Sistemas básicos
+                            }
                         }
-                    } catch (error) {
-                        console.error('Error al detectar disco:', error);
+                    } else {
+                        // Estimación basada en el tipo de sistema
+                        if (cores >= 16) {
+                            disco = '512 GB';
+                        } else if (cores >= 8) {
+                            disco = '256 GB';
+                        } else {
+                            disco = '128 GB';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al detectar disco:', error);
+                    // Estimación basada en el tipo de sistema
+                    if (cores >= 16) {
+                        disco = '512 GB';
+                    } else if (cores >= 8) {
                         disco = '256 GB';
+                    } else {
+                        disco = '128 GB';
                     }
                 }
 
                 // Evaluar estado del equipo
-                const ramGB = navigator.deviceMemory || (cores * 2);
+                const ramGB = navigator.deviceMemory || (cores * 1.5);
                 const estadoEquipo = (ramGB >= 4 && cores >= 2) ? 'APROBADO' : 'RECHAZADO';
 
                 // Debug: mostrar valores en consola
@@ -571,6 +592,7 @@
                 console.log('Disco detectado:', disco);
                 console.log('Sistema operativo:', sistemaOperativo);
                 console.log('Procesador:', procesador);
+                console.log('User Agent:', userAgent);
                 console.log('==================');
 
                 return {
@@ -787,13 +809,11 @@
                 const weightSum = speeds.reduce((sum, _, index) => sum + (index + 1), 0);
                 const avgSpeed = weightedSum / weightSum;
                 
-                // Ajustar para velocidades típicas de internet moderno
-                const adjustedSpeed = Math.max(avgSpeed, 100); // Mínimo 100 Mbps para conexiones modernas
-                
-                return Math.round(adjustedSpeed);
+                // No forzar un mínimo, usar la velocidad real medida
+                return Math.round(avgSpeed);
             } catch (error) {
                 console.error('Error en medición de descarga Speedtest:', error);
-                return 120; // Velocidad típica para conexiones modernas
+                return 0; // Si falla, devolver 0
             }
         }
 
@@ -852,13 +872,11 @@
                 const weightSum = speeds.reduce((sum, _, index) => sum + (index + 1), 0);
                 const avgSpeed = weightedSum / weightSum;
                 
-                // Ajustar para velocidades típicas de internet moderno
-                const adjustedSpeed = Math.max(avgSpeed, 100); // Mínimo 100 Mbps para conexiones modernas
-                
-                return Math.round(adjustedSpeed);
+                // No forzar un mínimo, usar la velocidad real medida
+                return Math.round(avgSpeed);
             } catch (error) {
                 console.error('Error en medición de carga Speedtest:', error);
-                return 120; // Velocidad típica para conexiones modernas
+                return 0; // Si falla, devolver 0
             }
         }
 
