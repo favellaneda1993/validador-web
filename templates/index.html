@@ -264,7 +264,7 @@
             <p>Ingresa tu nombre para comenzar la evaluación de tu equipo e internet</p>
             
             <div class="input-group">
-                <label for="user-name">Nombre del Usuario:</label>
+                <label for="user-name">Nombre del Postulante:</label>
                 <input type="text" id="user-name" placeholder="Ej: Juan Pérez" maxlength="50">
             </div>
             
@@ -388,8 +388,8 @@
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('results-screen').classList.remove('hidden');
             
-            // Mostrar nombre del usuario
-            document.getElementById('user-name-display').textContent = `Usuario: ${userName}`;
+            // Mostrar nombre del postulante
+            document.getElementById('user-name-display').textContent = `Postulante: ${userName}`;
             
             // Iniciar evaluación
             realizarEvaluacion();
@@ -620,7 +620,7 @@
         // Función para medir velocidad de internet del cliente
         async function medirVelocidadInternetCliente() {
             try {
-                // Mostrar progreso al usuario
+                // Mostrar progreso al postulante
                 const loadingElement = document.getElementById('loading');
                 loadingElement.innerHTML = `
                     <div class="spinner"></div>
