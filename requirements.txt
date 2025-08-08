@@ -2,3 +2,4 @@ flask
 openpyxl
 psutil
 speedtest-cli
+requests
