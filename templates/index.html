@@ -496,19 +496,24 @@
                 
                 // Nueva lógica simplificada de procesador: marca (Core), familia (i3/i5/i7/i9) y generación
                 if (userAgent.toLowerCase().includes('intel')) {
-                    const match = userAgent.match(/i(3|5|7|9)[\-\s]?([0-9]{4,5})?/i);
-                    if (match) {
-                        const family = match[1];
-                        const digits = match[2] || '';
-                        let generacion = '';
-                        if (digits.length === 5) {
-                            generacion = String(parseInt(digits.substring(0, 2), 10));
-                        } else if (digits.length === 4) {
-                            generacion = String(parseInt(digits.substring(0, 1), 10));
+                    // Extraer familia (i3/i5/i7/i9) y sufijo numérico (ej: 13700K)
+                    const familyMatch = userAgent.match(/i(3|5|7|9)/i);
+                    const modelMatch = userAgent.match(/(\d{4,5})([A-Z]{1,2})?/i); // 13700K, 12600, etc.
+                    const family = familyMatch ? familyMatch[1] : '';
+                    let generacion = '';
+                    if (modelMatch) {
+                        const digits = modelMatch[1];
+                        if (digits.length === 5) generacion = String(parseInt(digits.substring(0, 2), 10));
+                        else if (digits.length === 4) generacion = String(parseInt(digits.substring(0, 1), 10));
+                    }
+
+                    if (family) {
+                        const marca = 'Intel Core';
+                        if (generacion) {
+                            procesador = `${marca} i${family} - ${generacion}ª generación`;
+                        } else {
+                            procesador = `${marca} i${family}`;
                         }
-                        procesador = generacion
-                            ? `Intel Core i${family} - ${generacion}ª generación`
-                            : `Intel Core i${family}`;
                     } else {
                         // Fallback por número de núcleos
                         if (cores >= 16) procesador = 'Intel Core i7 - 12ª generación';
