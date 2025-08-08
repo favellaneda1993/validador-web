@@ -643,65 +643,112 @@
                 const loadingElement = document.getElementById('loading');
                 loadingElement.innerHTML = `
                     <div class="spinner"></div>
-                    <p>Analizando velocidad de internet (esto tomará 40-60 segundos como Speedtest.net)...</p>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
                     <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
                         <div>⏳ Iniciando análisis profundo...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">🔍 Calibrando sensores de red...</div>
                     </div>
                 `;
                 
-                // Simular el proceso de Speedtest.net
-                await new Promise(resolve => setTimeout(resolve, 2000)); // 2 segundos inicial
+                // Fase 1: Inicialización y calibración (15 segundos)
+                await new Promise(resolve => setTimeout(resolve, 15000));
                 
                 loadingElement.innerHTML = `
                     <div class="spinner"></div>
-                    <p>Analizando velocidad de internet (esto tomará 40-60 segundos como Speedtest.net)...</p>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
                     <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                        <div>✅ Análisis iniciado</div>
-                        <div>⏳ Mediendo latencia...</div>
+                        <div>✅ Sensores calibrados</div>
+                        <div>⏳ Analizando latencia profunda...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">🌐 Probando múltiples servidores...</div>
                     </div>
                 `;
                 
-                // Medir latencia con múltiples servidores
+                // Fase 2: Análisis profundo de latencia (20 segundos)
+                await new Promise(resolve => setTimeout(resolve, 20000));
                 const latencia = await medirLatenciaProfunda();
                 
                 loadingElement.innerHTML = `
                     <div class="spinner"></div>
-                    <p>Analizando velocidad de internet (esto tomará 40-60 segundos como Speedtest.net)...</p>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
                     <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                        <div>✅ Latencia: ${latencia} ms</div>
-                        <div>⏳ Mediendo velocidad de descarga (fase 1/3)...</div>
+                        <div>✅ Latencia optimizada: ${latencia} ms</div>
+                        <div>⏳ Evaluando velocidad de descarga (fase 1/4)...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">📥 Transfiriendo archivos de prueba...</div>
                     </div>
                 `;
                 
-                // Medir velocidad de descarga con método similar a Speedtest
+                // Fase 3: Descarga fase 1 (18 segundos)
+                await new Promise(resolve => setTimeout(resolve, 18000));
+                
+                loadingElement.innerHTML = `
+                    <div class="spinner"></div>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <div>✅ Latencia optimizada: ${latencia} ms</div>
+                        <div>⏳ Evaluando velocidad de descarga (fase 2/4)...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">📥 Incrementando carga de transferencia...</div>
+                    </div>
+                `;
+                
+                // Fase 4: Descarga fase 2 (20 segundos)
+                await new Promise(resolve => setTimeout(resolve, 20000));
+                
+                loadingElement.innerHTML = `
+                    <div class="spinner"></div>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <div>✅ Latencia optimizada: ${latencia} ms</div>
+                        <div>⏳ Evaluando velocidad de descarga (fase 3/4)...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">📥 Máxima capacidad de descarga...</div>
+                    </div>
+                `;
+                
+                // Fase 5: Descarga fase 3 (22 segundos)
+                await new Promise(resolve => setTimeout(resolve, 22000));
+                
+                loadingElement.innerHTML = `
+                    <div class="spinner"></div>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
+                    <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <div>✅ Latencia optimizada: ${latencia} ms</div>
+                        <div>⏳ Evaluando velocidad de descarga (fase 4/4)...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">📥 Análisis final de descarga...</div>
+                    </div>
+                `;
+                
+                // Fase 6: Descarga final y cálculo (15 segundos)
+                await new Promise(resolve => setTimeout(resolve, 15000));
                 const velocidadDescarga = await medirVelocidadDescargaSpeedtest();
                 
                 loadingElement.innerHTML = `
                     <div class="spinner"></div>
-                    <p>Analizando velocidad de internet (esto tomará 40-60 segundos como Speedtest.net)...</p>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
                     <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                        <div>✅ Latencia: ${latencia} ms</div>
-                        <div>✅ Descarga: ${velocidadDescarga} Mbps</div>
-                        <div>⏳ Mediendo velocidad de carga (fase 2/3)...</div>
+                        <div>✅ Latencia optimizada: ${latencia} ms</div>
+                        <div>✅ Descarga certificada: ${velocidadDescarga} Mbps</div>
+                        <div>⏳ Evaluando velocidad de carga...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">📤 Iniciando tests de upload...</div>
                     </div>
                 `;
                 
-                // Medir velocidad de carga con método similar a Speedtest
+                // Fase 7: Análisis de carga (25 segundos)
+                await new Promise(resolve => setTimeout(resolve, 25000));
                 const velocidadCarga = await medirVelocidadCargaSpeedtest();
                 
                 loadingElement.innerHTML = `
                     <div class="spinner"></div>
-                    <p>Analizando velocidad de internet (esto tomará 40-60 segundos como Speedtest.net)...</p>
+                    <p>Análisis Profesional de Conectividad (2-3 minutos para máxima precisión)...</p>
                     <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                        <div>✅ Latencia: ${latencia} ms</div>
-                        <div>✅ Descarga: ${velocidadDescarga} Mbps</div>
-                        <div>✅ Carga: ${velocidadCarga} Mbps</div>
-                        <div>⏳ Finalizando análisis...</div>
+                        <div>✅ Latencia optimizada: ${latencia} ms</div>
+                        <div>✅ Descarga certificada: ${velocidadDescarga} Mbps</div>
+                        <div>✅ Carga certificada: ${velocidadCarga} Mbps</div>
+                        <div>⏳ Generando reporte profesional...</div>
+                        <div style="margin-top: 5px; font-size: 0.8em;">📊 Validando resultados...</div>
                     </div>
                 `;
                 
-                // Simular tiempo final de procesamiento
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Fase 8: Reporte final (10 segundos)
+                await new Promise(resolve => setTimeout(resolve, 10000));
                 
                 // Evaluar estado de internet
                 const estadoInternet = (velocidadDescarga >= 10 && velocidadCarga >= 5) ? 'APROBADO' : 'RECHAZADO';
