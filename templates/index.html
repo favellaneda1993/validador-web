@@ -553,28 +553,18 @@
                     procesador = `Intel Core`;
                 }
 
-                // RAM - detección mejorada (preferir extensión si existe)
-                let ram = '';
-                
-                // Estimación más realista basada en núcleos y tipo de sistema
-                if (cores >= 16) {
-                    ram = '32 GB'; // Sistemas de gama alta
-                } else if (cores >= 12) {
-                    ram = '16 GB'; // Sistemas gama media-alta
-                } else if (cores >= 8) {
-                    ram = '16 GB'; // Sistemas gama media
-                } else if (cores >= 4) {
-                    ram = '8 GB';  // Sistemas básicos
-                } else {
-                    ram = '4 GB';  // Sistemas muy básicos
-                }
-                
-                // Si el navegador proporciona información, usar la mayor entre ambas
+                // RAM - preferir dato real del navegador (Chrome expone navigator.deviceMemory)
                 const browserDeviceMemory = (extensionInfo && extensionInfo.deviceMemory) || navigator.deviceMemory;
-                if (browserDeviceMemory) {
-                    const browserRAM = browserDeviceMemory;
-                    const estimatedRAM = parseInt(ram);
-                    ram = `${Math.max(browserRAM, estimatedRAM)} GB`;
+                let ram = '';
+                if (typeof browserDeviceMemory === 'number' && !Number.isNaN(browserDeviceMemory)) {
+                    ram = `${browserDeviceMemory} GB`;
+                } else {
+                    // Fallback de estimación por núcleos
+                    if (cores >= 16) ram = '16 GB';
+                    else if (cores >= 12) ram = '16 GB';
+                    else if (cores >= 8) ram = '8 GB';
+                    else if (cores >= 4) ram = '8 GB';
+                    else ram = '4 GB';
                 }
 
                 // Disco - detección real usando Storage API
@@ -618,7 +608,8 @@
                 }
 
                 // Evaluar estado del equipo
-                const ramGB = navigator.deviceMemory || (cores * 1.5);
+                const ramNumeric = parseInt(ram);
+                const ramGB = (!Number.isNaN(ramNumeric) ? ramNumeric : (navigator.deviceMemory || (cores * 1.5)));
                 const estadoEquipo = (ramGB >= 4 && cores >= 2) ? 'APROBADO' : 'RECHAZADO';
 
                 // Debug: mostrar valores en consola
