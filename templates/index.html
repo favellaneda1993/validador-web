@@ -494,75 +494,63 @@
                 console.log('Platform:', navigator.platform);
                 console.log('Cores detectados:', cores);
                 
-                // Detectar procesador real desde User Agent con más opciones
-                if (userAgent.includes('Intel')) {
-                    if (userAgent.includes('i7')) {
-                        if (userAgent.includes('1260P') || userAgent.includes('1270P')) {
-                            procesador = `12th Gen Intel(R) Core(TM) i7-1260P (${cores} CPUs), ~2.1GHz`;
-                        } else if (userAgent.includes('12700')) {
-                            procesador = `12th Gen Intel(R) Core(TM) i7-12700 (${cores} CPUs), ~2.1GHz`;
-                        } else if (userAgent.includes('10700')) {
-                            procesador = `10th Gen Intel(R) Core(TM) i7-10700 (${cores} CPUs), ~2.1GHz`;
-                        } else if (userAgent.includes('9700')) {
-                            procesador = `9th Gen Intel(R) Core(TM) i7-9700 (${cores} CPUs), ~2.0GHz`;
-                        } else {
-                            procesador = `Intel(R) Core(TM) i7 (${cores} CPUs), ~2.0GHz`;
+                // Nueva lógica simplificada de procesador: marca (Core), familia (i3/i5/i7/i9) y generación
+                if (userAgent.toLowerCase().includes('intel')) {
+                    const match = userAgent.match(/i(3|5|7|9)[\-\s]?([0-9]{4,5})?/i);
+                    if (match) {
+                        const family = match[1];
+                        const digits = match[2] || '';
+                        let generacion = '';
+                        if (digits.length === 5) {
+                            generacion = String(parseInt(digits.substring(0, 2), 10));
+                        } else if (digits.length === 4) {
+                            generacion = String(parseInt(digits.substring(0, 1), 10));
                         }
-                    } else if (userAgent.includes('i5')) {
-                        if (userAgent.includes('1260P') || userAgent.includes('1250P')) {
-                            procesador = `12th Gen Intel(R) Core(TM) i5-1260P (${cores} CPUs), ~1.8GHz`;
-                        } else if (userAgent.includes('12400')) {
-                            procesador = `12th Gen Intel(R) Core(TM) i5-12400 (${cores} CPUs), ~1.8GHz`;
-                        } else {
-                            procesador = `Intel(R) Core(TM) i5 (${cores} CPUs), ~1.8GHz`;
-                        }
-                    } else if (userAgent.includes('i3')) {
-                        procesador = `Intel(R) Core(TM) i3 (${cores} CPUs), ~1.6GHz`;
-                    } else if (userAgent.includes('i9')) {
-                        procesador = `Intel(R) Core(TM) i9 (${cores} CPUs), ~2.5GHz`;
+                        procesador = generacion
+                            ? `Intel Core i${family} - ${generacion}ª generación`
+                            : `Intel Core i${family}`;
                     } else {
-                        procesador = `Intel(R) Processor (${cores} CPUs), ~2.0GHz`;
+                        // Fallback por número de núcleos
+                        if (cores >= 16) procesador = 'Intel Core i7 - 12ª generación';
+                        else if (cores >= 12) procesador = 'Intel Core i7';
+                        else if (cores >= 8) procesador = 'Intel Core i5';
+                        else if (cores >= 4) procesador = 'Intel Core i3';
+                        else procesador = 'Intel Core';
                     }
-                } else if (userAgent.includes('AMD')) {
+                } else if (userAgent.toLowerCase().includes('amd')) {
                     if (userAgent.includes('Ryzen')) {
                         if (userAgent.includes('7')) {
-                            procesador = `AMD Ryzen 7 (${cores} CPUs), ~3.0GHz`;
+                            procesador = `AMD Ryzen 7`;
                         } else if (userAgent.includes('5')) {
-                            procesador = `AMD Ryzen 5 (${cores} CPUs), ~2.8GHz`;
+                            procesador = `AMD Ryzen 5`;
                         } else if (userAgent.includes('9')) {
-                            procesador = `AMD Ryzen 9 (${cores} CPUs), ~3.2GHz`;
+                            procesador = `AMD Ryzen 9`;
                         } else {
-                            procesador = `AMD Ryzen (${cores} CPUs), ~2.8GHz`;
+                            procesador = `AMD Ryzen`;
                         }
                     } else {
-                        procesador = `AMD Processor (${cores} CPUs), ~2.5GHz`;
+                        procesador = `AMD Processor`;
                     }
                 } else if (userAgent.includes('Apple')) {
                     if (userAgent.includes('Mac OS X')) {
                         if (userAgent.includes('Intel')) {
-                            procesador = `Intel(R) Core(TM) Processor (${cores} CPUs), ~2.0GHz`;
+                            procesador = `Intel Core`;
                         } else {
-                            procesador = `Apple M1/M2 Processor (${cores} CPUs), ~2.0GHz`;
+                            procesador = `Apple Silicon (M1/M2)`;
                         }
                     }
                 } else {
                     // Fallback más inteligente basado en núcleos - SIEMPRE asignar un valor
-                    if (cores >= 16) {
-                        procesador = `Intel(R) Core(TM) i7-1260P (${cores} CPUs), ~2.1GHz`;
-                    } else if (cores >= 12) {
-                        procesador = `Intel(R) Core(TM) i7 (${cores} CPUs), ~2.0GHz`;
-                    } else if (cores >= 8) {
-                        procesador = `Intel(R) Core(TM) i5 (${cores} CPUs), ~1.8GHz`;
-                    } else if (cores >= 4) {
-                        procesador = `Intel(R) Core(TM) i3 (${cores} CPUs), ~1.6GHz`;
-                    } else {
-                        procesador = `Processor (${cores} CPUs), ~2.0GHz`;
-                    }
+                    if (cores >= 16) procesador = 'Intel Core i7';
+                    else if (cores >= 12) procesador = 'Intel Core i7';
+                    else if (cores >= 8) procesador = 'Intel Core i5';
+                    else if (cores >= 4) procesador = 'Intel Core i3';
+                    else procesador = 'Processor';
                 }
                 
                 // Asegurar que siempre hay un procesador válido
                 if (!procesador || procesador === '') {
-                    procesador = `Intel(R) Core(TM) i5 (${cores} CPUs), ~2.0GHz`;
+                    procesador = `Intel Core`;
                 }
 
                 // RAM - detección mejorada (preferir extensión si existe)
