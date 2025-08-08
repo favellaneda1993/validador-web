@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado de Evaluación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .evaluation-section {
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            padding: 20px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .equipment-header {
+            background: #4472C4;
+        }
+
+        .internet-header {
+            background: #70AD47;
+        }
+
+        .section-content {
+            padding: 25px;
+            background: white;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .info-value {
+            color: #666;
+            flex: 1;
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        .status-approved {
+            background: #70AD47;
+            color: white;
+        }
+
+        .status-rejected {
+            background: #C00000;
+            color: white;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .btn-secondary:hover {
+            background: #BBDEFB;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .download-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Resultado de Evaluación</h1>
+        </div>
+
+        <div class="content">
+            <!-- Estado de carga -->
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Evaluando características del equipo e internet...</p>
+            </div>
+
+            <!-- Resultados -->
+            <div id="results" class="hidden">
+                <!-- Evaluación del Equipo -->
+                <div class="evaluation-section">
+                    <div class="section-header equipment-header">
+                        Evaluación del Equipo
+                    </div>
+                    <div class="section-content">
+                        <div class="info-row">
+                            <span class="info-label">Sistema Operativo:</span>
+                            <span class="info-value" id="sistema-operativo">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Arquitectura:</span>
+                            <span class="info-value" id="arquitectura">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Procesador:</span>
+                            <span class="info-value" id="procesador">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Núcleos físicos:</span>
+                            <span class="info-value" id="nucleos-fisicos">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Núcleos lógicos:</span>
+                            <span class="info-value" id="nucleos-logicos">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">RAM:</span>
+                            <span class="info-value" id="ram">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Disco:</span>
+                            <span class="info-value" id="disco">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Estado del equipo:</span>
+                            <span class="info-value">
+                                <span class="status-badge" id="estado-equipo">-</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Evaluación de Internet -->
+                <div class="evaluation-section">
+                    <div class="section-header internet-header">
+                        Evaluación de Internet
+                    </div>
+                    <div class="section-content">
+                        <div class="info-row">
+                            <span class="info-label">Velocidad de descarga:</span>
+                            <span class="info-value" id="velocidad-descarga">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Velocidad de carga:</span>
+                            <span class="info-value" id="velocidad-carga">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Latencia:</span>
+                            <span class="info-value" id="latencia">-</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Estado de internet:</span>
+                            <span class="info-value">
+                                <span class="status-badge" id="estado-internet">-</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="buttons">
+                    <button class="btn btn-secondary" onclick="evaluarNuevamente()">
+                        Volver a evaluar
+                    </button>
+                    <button class="btn btn-primary" onclick="exportarExcel()">
+                        <svg class="download-icon" viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        Exportar resultado a Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para realizar la evaluación
+        async function realizarEvaluacion() {
+            try {
+                const response = await fetch('/evaluar');
+                const data = await response.json();
+                
+                if (data.equipo.error || data.internet.error) {
+                    throw new Error(data.equipo.error || data.internet.error);
+                }
+
+                // Actualizar datos del equipo
+                document.getElementById('sistema-operativo').textContent = data.equipo.sistema_operativo;
+                document.getElementById('arquitectura').textContent = data.equipo.arquitectura;
+                document.getElementById('procesador').textContent = data.equipo.procesador;
+                document.getElementById('nucleos-fisicos').textContent = data.equipo.nucleos_fisicos;
+                document.getElementById('nucleos-logicos').textContent = data.equipo.nucleos_logicos;
+                document.getElementById('ram').textContent = data.equipo.ram;
+                document.getElementById('disco').textContent = data.equipo.disco;
+                
+                const estadoEquipo = document.getElementById('estado-equipo');
+                estadoEquipo.textContent = data.equipo.estado_equipo;
+                estadoEquipo.className = `status-badge ${data.equipo.estado_equipo === 'APROBADO' ? 'status-approved' : 'status-rejected'}`;
+
+                // Actualizar datos de internet
+                document.getElementById('velocidad-descarga').textContent = `${data.internet.velocidad_descarga} Mbps`;
+                document.getElementById('velocidad-carga').textContent = `${data.internet.velocidad_carga} Mbps`;
+                document.getElementById('latencia').textContent = `${data.internet.latencia} ms`;
+                
+                const estadoInternet = document.getElementById('estado-internet');
+                estadoInternet.textContent = data.internet.estado_internet;
+                estadoInternet.className = `status-badge ${data.internet.estado_internet === 'APROBADO' ? 'status-approved' : 'status-rejected'}`;
+
+                // Mostrar resultados
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('results').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Error en la evaluación:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div class="spinner"></div>
+                    <p>Error: ${error.message}</p>
+                    <button class="btn btn-secondary" onclick="evaluarNuevamente()">Reintentar</button>
+                `;
+            }
+        }
+
+        // Función para evaluar nuevamente
+        function evaluarNuevamente() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('loading').innerHTML = `
+                <div class="spinner"></div>
+                <p>Evaluando características del equipo e internet...</p>
+            `;
+            realizarEvaluacion();
+        }
+
+        // Función para exportar a Excel
+        function exportarExcel() {
+            const btn = event.target.closest('.btn');
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = `
+                <div class="spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>
+                Exportando...
+            `;
+            btn.disabled = true;
+
+            fetch('/exportar-excel')
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    }
+                    throw new Error('Error al exportar');
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `evaluacion_equipo_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al exportar el archivo Excel');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                });
+        }
+
+        // Iniciar evaluación al cargar la página
+        document.addEventListener('DOMContentLoaded', realizarEvaluacion);
+    </script>
+</body>
+</html>
