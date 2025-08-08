@@ -116,6 +116,29 @@ http://localhost:5000
 4. **Obtener URL**:
    - Railway te dará una URL automáticamente
 
+## 🐳 Ejecutar con Docker
+
+### Requisitos
+- Docker y Docker Compose instalados
+
+### Construir y ejecutar con Docker
+
+```bash
+# Construir la imagen
+docker build -t validador-web:latest .
+
+# Ejecutar el contenedor
+docker run --rm -p 5000:5000 --name validador-web validador-web:latest
+```
+
+### Usar docker-compose
+
+```bash
+docker-compose up --build
+```
+
+Luego abre: `http://localhost:5000`
+
 ## Dependencias
 
 - **Flask**: Framework web
