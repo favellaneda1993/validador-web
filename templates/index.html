@@ -451,9 +451,15 @@
         // Función para obtener características del equipo del cliente
         async function obtenerCaracteristicasEquipoCliente() {
             try {
+                // Integración con la extensión: tomar datos si están disponibles
+                let extensionInfo = window.__VALIDADOR_HW__ || null;
+                window.addEventListener('validador-hw-ready', (e) => {
+                    extensionInfo = e.detail;
+                    console.log('Datos de extensión recibidos:', extensionInfo);
+                }, { once: true });
                 // Información del sistema operativo
                 let sistemaOperativo = 'Desconocido';
-                const userAgent = navigator.userAgent;
+                const userAgent = (extensionInfo && extensionInfo.userAgent) || navigator.userAgent;
                 
                 if (userAgent.includes('Windows NT 10.0')) {
                     sistemaOperativo = 'Windows 11';
@@ -480,7 +486,7 @@
                 }
 
                 // Procesador - detección real basada en User Agent
-                const cores = navigator.hardwareConcurrency || 4;
+                const cores = (extensionInfo && extensionInfo.hardwareConcurrency) || navigator.hardwareConcurrency || 4;
                 let procesador = '';
                 
                 // Debug: mostrar información del navegador
@@ -559,7 +565,7 @@
                     procesador = `Intel(R) Core(TM) i5 (${cores} CPUs), ~2.0GHz`;
                 }
 
-                // RAM - detección mejorada
+                // RAM - detección mejorada (preferir extensión si existe)
                 let ram = '';
                 
                 // Estimación más realista basada en núcleos y tipo de sistema
@@ -576,8 +582,9 @@
                 }
                 
                 // Si el navegador proporciona información, usar la mayor entre ambas
-                if (navigator.deviceMemory) {
-                    const browserRAM = navigator.deviceMemory;
+                const browserDeviceMemory = (extensionInfo && extensionInfo.deviceMemory) || navigator.deviceMemory;
+                if (browserDeviceMemory) {
+                    const browserRAM = browserDeviceMemory;
                     const estimatedRAM = parseInt(ram);
                     ram = `${Math.max(browserRAM, estimatedRAM)} GB`;
                 }
